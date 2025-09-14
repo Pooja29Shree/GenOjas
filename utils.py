@@ -19,20 +19,20 @@ def score_ojas(sleep_hrs, energy, focus, appetite, social):
     score = int(sum(w*v*100 for w, v in zip(weights, vals)))
     return max(0, min(100, score))
 
-def hide_sidebar_nav():
-    import streamlit as st
-    st.markdown(
-        """
-        <style>
-        section[data-testid="stSidebar"] { display: none !important; }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+def mood_from_bpm(bpm:int):
+    """Map breaths-per-minute to a mood label + score (-2..+2)."""
+    if bpm < 9:   return "deeply relaxed", +2
+    if bpm < 13:  return "calm", +1
+    if bpm < 18:  return "neutral", 0
+    if bpm < 24:  return "stressed", -1
+    return "anxious", -2
 
-def mood_from_bpm(bpm:int)->str:
-    if bpm is None: return "unknown"
-    if bpm <= 9:  return f"calm ({bpm} bpm)"
-    if bpm <= 14: return f"easy ({bpm} bpm)"
-    if bpm <= 18: return f"brisk ({bpm} bpm)"
-    return f"tense ({bpm} bpm)"
+def hide_sidebar_nav():
+    st.markdown("""
+        <style>
+        /* Hide the built-in multi-page nav */
+        [data-testid="stSidebarNav"] { display: none !important; }
+        /* Collapse the whole sidebar column */
+        section[data-testid="stSidebar"] { width: 0 !important; min-width: 0 !important; }
+        </style>
+    """, unsafe_allow_html=True)
