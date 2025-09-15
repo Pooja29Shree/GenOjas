@@ -28,7 +28,7 @@ with colL:
     if st.button("Button 3", use_container_width=True):
         st.switch_page("pages/06_button3.py")
 with colR:
-    if st.button("Button 4", use_container_width=True):
+    if st.button("Art Generation", use_container_width=True):
         st.switch_page("pages/07_button4.py")
     if st.button("Button 5", use_container_width=True):
         st.switch_page("pages/08_button5.py")

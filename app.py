@@ -7,7 +7,6 @@ st.set_page_config(page_title="GenOjas", page_icon="🧘", layout="wide",
 
 hide_sidebar_nav()   # call right after set_page_config
 
-st.set_page_config(page_title="GenOjas", page_icon="🧘", layout="wide")
 ensure_state()
 
 # ---- HEADER ----
@@ -41,3 +40,5 @@ cL, cM, cR = st.columns([1, 2, 1])
 with cM:
     if st.button("Ojas Boost →", use_container_width=True, key="go_boost"):
         st.switch_page("pages/03_ojas_boost.py")
+
+

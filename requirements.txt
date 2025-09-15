@@ -1,3 +1,5 @@
 streamlit>=1.38.0
 numpy
 google-cloud-aiplatform
+gtts
+google-generativeai
