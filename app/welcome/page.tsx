@@ -8,23 +8,19 @@ import clsx from "clsx";
 
 export default function Page() {
   const [orderControl, setOrderControl] = useState(0);
-  const [optionsChosen, setOptionsChosen] = useState<boolean[][]>([
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-  ]);
+  const [optionsChosen, setOptionsChosen] = useState<boolean[][]>(
+    Array(15)
+      .fill(null)
+      .map(() => Array(4).fill(false))
+  );
+
+  function calculateAndShowOjasScore() {
+    const trueCount = optionsChosen.flat().filter(Boolean).length;
+    const totalOptions = optionsChosen.length * optionsChosen[0].length;
+    const ojasScore = Math.round((trueCount / totalOptions) * 100);
+    alert(`Your Ojas score is: ${ojasScore}`);
+    // Optionally, you can redirect or show a final summary component here
+  }
   const order = [
     <Intro next={next} />,
     <Q1
@@ -98,7 +94,7 @@ export default function Page() {
       setOptionsChosen={setOptionsChosen}
     />,
     <Q15
-      next={next}
+      next={calculateAndShowOjasScore}
       optionsChosen={optionsChosen}
       setOptionsChosen={setOptionsChosen}
     />,
