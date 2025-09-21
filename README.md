@@ -6,7 +6,7 @@
 ---
 
 ## Architecture
-![GenOjas Architecture](genojas.png)
+![GenOjas Architecture](genojas.jpg)
 
 ## Overview
 

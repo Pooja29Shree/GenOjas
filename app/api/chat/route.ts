@@ -3,7 +3,6 @@ import {
   HarmCategory,
   HarmBlockThreshold,
 } from "@google/generative-ai";
-import { NextResponse } from "next/server";
 
 const genAI = new GoogleGenerativeAI(process.env.MITRA || "");
 
@@ -33,7 +32,6 @@ export async function POST(req: Request) {
   const result = await model.generateContent({
     ...buildGoogleGenAIPrompt(messages),
   });
-
   const text = result.response.candidates?.[0]?.content?.parts?.[0]?.text || "";
   return new Response(text, { status: 200 });
 }
