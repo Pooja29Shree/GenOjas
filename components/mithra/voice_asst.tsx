@@ -1,40 +1,69 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Mic, Loader2 } from "lucide-react";
 
 export default function VoiceAssistant() {
   const [messages, setMessages] = useState<{ role: "user" | "mithra"; text: string }[]>([]);
   const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunks = useRef<Blob[]>([]);
 
-  // Simulate recording voice
   const handleMicClick = async () => {
-    setIsListening(true);
+    if (!isListening) {
+      // 🎤 Start listening
+      setIsListening(true);
+      audioChunks.current = [];
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
 
-    // TODO: integrate Google Speech-to-Text API
-    setTimeout(() => {
-      const userText = "Hey Mithra, how are you today?";
-      setMessages((prev) => [...prev, { role: "user", text: userText }]);
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunks.current.push(e.data);
+      };
+
+      mediaRecorder.start();
+    } else {
+      // ⏹ Stop listening
       setIsListening(false);
-      handleMithraReply(userText);
-    }, 2000);
-  };
+      mediaRecorderRef.current?.stop();
 
-  // Simulate Mithra's reply
-  const handleMithraReply = async (userText: string) => {
-    setIsSpeaking(true);
+      mediaRecorderRef.current!.onstop = async () => {
+        const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
+        const formData = new FormData();
+        formData.append("file", audioBlob, "recording.webm");
 
-    // TODO: call API (/api/voice/process)
-    setTimeout(() => {
-      const reply = "I’m doing great! Excited to chat with you.";
-      setMessages((prev) => [...prev, { role: "mithra", text: reply }]);
-      setIsSpeaking(false);
-    }, 2500);
+        const res = await fetch("/api/voice/process", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        // Show user’s transcript
+        if (data.transcript) {
+          setMessages((prev) => [...prev, { role: "user", text: data.transcript }]);
+        }
+
+        // Show Mithra’s analysis / response
+        if (data.reply) {
+          setMessages((prev) => [...prev, { role: "mithra", text: data.reply }]);
+        }
+
+        // Play Mithra’s voice
+        if (data.audioContent) {
+          const audioBlob = new Blob([new Uint8Array(data.audioContent.data)], { type: "audio/mp3" });
+          const url = URL.createObjectURL(audioBlob);
+          setAudioUrl(url);
+          const audio = new Audio(url);
+          audio.play();
+        }
+      };
+    }
   };
 
   return (
     <div className="w-full max-w-2xl h-[80vh] bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex flex-col p-6">
-      {/* Header */}
       <div className="text-center font-bold text-2xl text-pink-300">Mithra</div>
 
       {/* Messages */}
@@ -51,22 +80,12 @@ export default function VoiceAssistant() {
             {msg.text}
           </div>
         ))}
-
-        {/* Speaking indicator */}
-        {isSpeaking && (
-          <div className="mr-auto flex space-x-2 p-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white max-w-[40%]">
-            <span className="w-2 h-2 bg-white rounded-full animate-bounce" />
-            <span className="w-2 h-2 bg-white rounded-full animate-bounce delay-150" />
-            <span className="w-2 h-2 bg-white rounded-full animate-bounce delay-300" />
-          </div>
-        )}
       </div>
 
-      {/* Controls */}
+      {/* Mic button */}
       <div className="mt-4 flex justify-center">
         <button
           onClick={handleMicClick}
-          disabled={isListening}
           className={`w-14 h-14 flex items-center justify-center rounded-full shadow-lg transition-all ${
             isListening
               ? "bg-red-500 animate-pulse"
