@@ -1,54 +1,93 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { Mic, Loader2 } from "lucide-react";
 
 export default function VoiceAssistant() {
-  const [transcript, setTranscript] = useState("");
-  const [reply, setReply] = useState("");
+  const [messages, setMessages] = useState<
+    { role: "user" | "mithra"; text: string }[]
+  >([]);
+  const [isListening, setIsListening] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
+  const audioChunks = useRef<Blob[]>([]);
 
-  const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    audioChunksRef.current = [];
+  const handleMicClick = async () => {
+    if (!isListening) {
+      // 🎤 Start listening
+      setIsListening(true);
+      audioChunks.current = [];
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
 
-    mediaRecorderRef.current.ondataavailable = (e) => {
-      audioChunksRef.current.push(e.data);
-    };
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunks.current.push(e.data);
+      };
 
-    mediaRecorderRef.current.onstop = async () => {
-      const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-      const formData = new FormData();
-      formData.append("file", blob);
+      mediaRecorder.start();
+    } else {
+      // ⏹ Stop listening
+      setIsListening(false);
+      mediaRecorderRef.current?.stop();
 
-      const res = await fetch("/api/voice/process", { method: "POST", body: formData });
-      const data = await res.json();
-      setTranscript(data.transcript);
-      setReply(data.reply);
-    };
+      mediaRecorderRef.current!.onstop = async () => {
+        const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
+        const formData = new FormData();
+        formData.append("file", audioBlob, "recording.webm");
 
-    mediaRecorderRef.current.start();
-  };
+        // 1️⃣ Send audio to backend
+        const res = await fetch("/api/voice/process", { method: "POST", body: formData });
+        const data = await res.json();
 
-  const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
+        // 2️⃣ Add user transcript to chat
+        if (data.transcript) {
+          setMessages((prev) => [...prev, { role: "user", text: data.transcript }]);
+        }
+
+        // 3️⃣ Add Mithra text reply to chat
+        if (data.reply) {
+          setMessages((prev) => [...prev, { role: "mithra", text: data.reply }]);
+        }
+      };
+    }
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto mt-10 border rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-4">Talk to Mithra</h2>
-      <button
-        onMouseDown={startRecording}
-        onMouseUp={stopRecording}
-        className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
-      >
-        🎤 Hold to Speak
-      </button>
+    <div className="w-full max-w-2xl h-[80vh] bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex flex-col p-6">
+      <div className="text-center font-bold text-2xl text-pink-300">Mithra</div>
 
-      <div className="mt-4">
-        <p><strong>You:</strong> {transcript}</p>
-        <p><strong>Mithra:</strong> {reply}</p>
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto mt-4 space-y-4 pr-2">
+        {messages.map((msg, i) => (
+          <div
+            key={i}
+            className={`p-3 rounded-xl max-w-[80%] ${
+              msg.role === "user"
+                ? "ml-auto bg-gradient-to-r from-blue-600 to-blue-400 text-white"
+                : "mr-auto bg-gradient-to-r from-purple-600 to-pink-500 text-white"
+            }`}
+          >
+            {msg.text}
+          </div>
+        ))}
+      </div>
+
+      {/* Mic button */}
+      <div className="mt-4 flex justify-center">
+        <button
+          onClick={handleMicClick}
+          className={`w-14 h-14 flex items-center justify-center rounded-full shadow-lg transition-all ${
+            isListening
+              ? "bg-red-500 animate-pulse"
+              : "bg-gradient-to-r from-pink-500 to-purple-600 hover:scale-110 active:scale-95"
+          }`}
+        >
+          {isListening ? (
+            <Loader2 className="w-6 h-6 animate-spin text-white" />
+          ) : (
+            <Mic className="w-6 h-6 text-white" />
+          )}
+        </button>
       </div>
     </div>
   );
