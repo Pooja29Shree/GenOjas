@@ -52,12 +52,11 @@ export default function VoiceAssistant() {
 
         // Play Mithra’s voice
         if (data.audioContent) {
-          const audioBlob = new Blob([new Uint8Array(data.audioContent.data)], { type: "audio/mp3" });
-          const url = URL.createObjectURL(audioBlob);
-          setAudioUrl(url);
-          const audio = new Audio(url);
-          audio.play();
-        }
+        const audioBlob = new Blob([Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))], { type: "audio/mp3" });
+        const url = URL.createObjectURL(audioBlob);
+        const audio = new Audio(url);
+        audio.play();
+      }
       };
     }
   };
