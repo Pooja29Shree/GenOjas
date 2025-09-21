@@ -21,7 +21,7 @@ import {
   YAxis,
 } from "recharts";
 import { useChat } from "ai/react";
-import { json } from "stream/consumers";
+import Link from "next/link";
 
 const streakData = [
   { day: "Mon", value: 10 },
@@ -44,9 +44,10 @@ const ojasBoostData = [
 ];
 
 export default function DashboardPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: "/api/chat",
-  });
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      api: "/api/chat",
+    });
 
   return (
     <div className="min-h-screen bg-gray-100/40 dark:bg-gray-800/40 p-4 sm:p-6 md:p-8">
@@ -66,7 +67,9 @@ export default function DashboardPage() {
                 <Progress value={25} className="w-full" />
               </CardContent>
               <CardFooter className="flex gap-4">
-                <Button>Detect Ojas</Button>
+                <Link href="/ojas-detect">
+                  <Button>Detect Ojas</Button>
+                </Link>
                 <Button variant="outline">Detect Bhava (mood)</Button>
               </CardFooter>
             </Card>
@@ -89,9 +92,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle>OjasBoost</CardTitle>
-              <CardDescription>
-                Your Ojas boost over time.
-              </CardDescription>
+              <CardDescription>Your Ojas boost over time.</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -120,7 +121,9 @@ export default function DashboardPage() {
                   </div>
                 ))}
                 {isLoading && (
-                  <div className="flex gap-2 text-blue-500">AI is typing...</div>
+                  <div className="flex gap-2 text-blue-500">
+                    AI is typing...
+                  </div>
                 )}
               </div>
             </CardContent>
