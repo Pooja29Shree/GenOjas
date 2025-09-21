@@ -5,6 +5,9 @@
 
 ---
 
+## Architecture
+![GenOjas Architecture](docs/genojas-architecture.png)
+
 ## Overview
 
 GenOjas empowers youth to **track their well-being (Ojas)**, **understand their emotions (Bhava)**, and **build consistency (OjasStreak)** while receiving personalized caretaker guidance through **MatrikaCore**. At its heart lies **OjasBoost** — a holistic suite of seven GenAI modules that blend innovation with cultural sensitivity to transform mental health support into a journey of resilience and hope.
@@ -65,8 +68,6 @@ GenOjas-main/
 │── firestore.rules   # Firestore config
 │── .env.example      # API keys (Cloud + Firebase)
 ```
-## Architecture
-![GenOjas Architecture](docs/genojas-architecture.png)
 
 ### Tech Stack
 - **Frontend:** Next.js + TypeScript + Tailwind CSS
