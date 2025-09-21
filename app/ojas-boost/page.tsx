@@ -38,6 +38,19 @@ export default function OjasBoostPage() {
                   {option}
                 </Button>
               </Link>
+            ) : option === "Mitra" ? (
+              <Link key={option} href="/voice">
+                <Button
+                  className="w-40 h-32 text-2xl font-bold text-white 
+                             bg-gradient-to-r from-purple-500 to-blue-500 
+                             hover:from-blue-500 hover:to-purple-500
+                             shadow-xl rounded-2xl
+                             transform transition-transform duration-300 hover:scale-105
+                             flex items-center justify-center"
+                >
+                  {option}
+                </Button>
+              </Link>
             ) : (
               <Button
                 key={option}
