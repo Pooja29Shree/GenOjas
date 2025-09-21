@@ -1,0 +1,162 @@
+export const questions = [
+  {
+    id: 1,
+    category: "Stress Management",
+    question: "When you feel stressed, what helps you most?",
+    options: [
+      "Listening to music",
+      "Talking to Someone",
+      "Resting",
+      "Exercising",
+    ],
+  },
+  {
+    id: 2,
+    category: "Emotional Awareness",
+    question: "Which emotions do you experience most often?",
+    options: ["Joy/Excitement", "Calm/Contentment", "Worry/Anxiety", "Sadness/Loneliness"],
+  },
+  {
+    id: 3,
+    category: "Emotional Expression",
+    question: "How do you usually express difficult feelings?",
+    options: [
+      "📝 Writing/journaling",
+      "🎨 Creative outlets (art, music, dance)",
+      "💬 Talking with someone",
+      "🤐 Keeping it inside",
+    ],
+  },
+  {
+    id: 4,
+    category: "🌱 Personality & Growth",
+    question: "What motivates you most in life?",
+    options: [
+      "🎯 Achieving goals",
+      "❤ Building relationships",
+      "🌍 Exploring/learning",
+      "🧘 Peace of mind",
+    ],
+  },
+  {
+    id: 5,
+    category: "🌱 Personality & Growth",
+    question: "When facing challenges, you usually…",
+    options: [
+      "🧩 Think logically and plan",
+      "💡 Look for creative alternatives",
+      "🤝 Seek help/support",
+      "🙏 Trust instincts/go with the flow",
+    ],
+  },
+  {
+    id: 6,
+    category: "🌱 Personality & Growth",
+    question: "Which environment makes you feel most “yourself”?",
+    options: [
+      "🌲 Nature/outdoors",
+      "🏙 Busy city spaces",
+      "🏠 Cozy home spaces",
+      "🎉 Social gatherings",
+    ],
+  },
+  {
+    id: 7,
+    category: "🌟 Social & Lifestyle",
+    question: "Which type of connection do you value most?",
+    options: [
+      "👫 Close friends",
+      "💕 Romantic partner",
+      "👨‍👩‍👧 Family",
+      "🌐 Community/like-minded groups",
+    ],
+  },
+  {
+    id: 8,
+    category: "🌟 Social & Lifestyle",
+    question: "When meeting new people, you are usually…",
+    options: [
+      "🗣 Outgoing & open",
+      "🤔 Reserved but warm up later",
+      "👂 A good listener",
+      "😅 A bit anxious",
+    ],
+  },
+  {
+    id: 9,
+    category: "🌟 Social & Lifestyle",
+    question: "How do you like to spend free time?",
+    options: [
+      "📚 Reading/learning",
+      "🎮 Games/entertainment",
+      "🎨 Creative hobbies",
+      "🛌 Relaxing/resting",
+    ],
+  },
+  {
+    id: 10,
+    category: "💭 Reflection & Well-being",
+    question: "What gives you a sense of purpose?",
+    options: [
+      "🌍 Helping others",
+      "🎯 Achievements & growth",
+      "🧘 Peace & balance",
+      "🎨 Self-expression",
+    ],
+  },
+  {
+    id: 11,
+    category: "💭 Reflection & Well-being",
+    question: "Which of these self-care activities do you connect with?",
+    options: [
+      "🛁 Relaxation (spa, bath, naps)",
+      "🏃 Physical activity (sports, yoga, walks)",
+      "🎶 Creative/expressive hobbies",
+      "💬 Meaningful conversations",
+    ],
+  },
+  {
+    id: 12,
+    category: "💭 Reflection & Well-being",
+    question: "How do you usually recharge after a long day?",
+    options: [
+      "😴 Sleep/quiet time",
+      "📺 Entertainment (TV, movies, games)",
+      "🗣 Talking with loved ones",
+      "🌲 Time in nature",
+    ],
+  },
+  {
+    id: 13,
+    category: "🌈 Mindset & Outlook",
+    question: "Which describes you best?",
+    options: [
+      "🧠 Thinker (logical, analytical)",
+      "❤ Feeler (emotional, empathetic)",
+      "🎨 Creator (imaginative, expressive)",
+      "🚀 Explorer (curious, adventurous)",
+    ],
+  },
+  {
+    id: 14,
+    category: "🌈 Mindset & Outlook",
+    question: "Which values resonate with you most?",
+    options: [
+      "🤝 Loyalty & trust",
+      "💡 Growth & learning",
+      "❤ Kindness & compassion",
+      "🧘 Peace & balance",
+    ],
+  },
+  {
+    id: 15,
+    category: "🌈 Mindset & Outlook",
+    question: "What do you hope to improve most in your mental wellness journey?",
+    options: [
+      "😌 Managing stress & anxiety",
+      "🌙 Sleep & relaxation",
+      "🤝 Building healthy relationships",
+      "🎯 Self-confidence & growth",
+    ],
+  },
+];
