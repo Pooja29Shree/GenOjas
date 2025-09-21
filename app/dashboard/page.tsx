@@ -53,7 +53,7 @@ export default function DashboardPage() {
     setInput(e.target.value);
   };
 
-  function handleChat(e) {
+  function handleChat(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
     fetch("/api/chat", {
