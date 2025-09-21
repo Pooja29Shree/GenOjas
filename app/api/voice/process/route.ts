@@ -6,10 +6,36 @@ export async function POST(req: NextRequest) {
 
   if (!userText) return NextResponse.json({ reply: "Say something!" });
 
-  // Simple sentiment analysis fallback (optional)
-  let reply = "Thanks for sharing 💫. I’m always listening.";
-  if (userText.toLowerCase().includes("happy")) reply = "That's awesome! 🌸";
-  if (userText.toLowerCase().includes("sad")) reply = "I sense you’re feeling down 💜. I'm here.";
+  try {
+    // Call Vertex AI API (or any LLM API)
+    const apiRes = await fetch(
+      `https://us-central1-aiplatform.googleapis.com/v1/projects/YOUR_PROJECT_ID/locations/us-central1/publishers/google/models/text-bison-001:predict`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.Vertex_AI_API}`, // your API key
+        },
+        body: JSON.stringify({
+          instances: [
+            {
+              content: userText,
+            },
+          ],
+          parameters: {
+            temperature: 0.7,
+            maxOutputTokens: 256,
+          },
+        }),
+      }
+    );
 
-  return NextResponse.json({ reply });
+    const data = await apiRes.json();
+    const reply = data.predictions?.[0].content ?? "I didn't understand that.";
+
+    return NextResponse.json({ reply });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ reply: "Oops! Something went wrong 😅" });
+  }
 }
