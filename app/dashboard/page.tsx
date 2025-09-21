@@ -11,8 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Bar,
   BarChart,
@@ -22,6 +20,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useChat } from "ai/react";
+import { json } from "stream/consumers";
 
 const streakData = [
   { day: "Mon", value: 10 },
@@ -44,6 +44,10 @@ const ojasBoostData = [
 ];
 
 export default function DashboardPage() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: "/api/chat",
+  });
+
   return (
     <div className="min-h-screen bg-gray-100/40 dark:bg-gray-800/40 p-4 sm:p-6 md:p-8">
       <div className="grid gap-8 lg:grid-cols-3">
@@ -105,17 +109,31 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle>MatrikaCore</CardTitle>
             </CardHeader>
-            <CardContent className="flex-grow">
-              <Textarea
-                className="h-full resize-none"
-                placeholder="MatrikaCore output..."
-                readOnly
-              />
+            <CardContent className="flex-grow overflow-y-auto">
+              <div className="space-y-4">
+                {messages.map((m: any) => (
+                  <div key={m.id} className="flex gap-2">
+                    <span className="font-bold">
+                      {m.role === "user" ? "User: " : "AI: "}
+                    </span>
+                    <span>{m.content}</span>
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="flex gap-2 text-blue-500">AI is typing...</div>
+                )}
+              </div>
             </CardContent>
             <CardFooter>
-              <div className="relative w-full">
-                <Input placeholder="Chatbox..." className="pr-10" />
-              </div>
+              <form onSubmit={handleSubmit} className="relative w-full">
+                <Input
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder="Chatbox..."
+                  className="pr-10"
+                  disabled={isLoading}
+                />
+              </form>
             </CardFooter>
           </Card>
         </div>
