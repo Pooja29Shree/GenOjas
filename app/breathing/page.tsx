@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
+import { Suspense } from "react";
 
 function getBreathingTechnique(ojas: number) {
   if (ojas <= 25) {
@@ -11,7 +12,7 @@ function getBreathingTechnique(ojas: number) {
       name: "Box Breathing",
       scientific: "Sama Vritti Pranayama (Equal Breath)",
       description: "Follow the cycle mindfully: Inhale → Hold → Exhale → Hold.",
-     
+
       cycle: ["Inhale", "Hold", "Exhale", "Hold"],
       durations: [4, 4, 4, 4], // seconds
     };
@@ -20,7 +21,7 @@ function getBreathingTechnique(ojas: number) {
       name: "4-7-8 Breathing",
       scientific: "Relaxing Breath Technique",
       description: "Inhale 4s → Hold 7s → Exhale 8s. Focus on deep relaxation.",
-  
+
       cycle: ["Inhale", "Hold", "Exhale"],
       durations: [4, 7, 8],
     };
@@ -28,7 +29,8 @@ function getBreathingTechnique(ojas: number) {
     return {
       name: "Alternate Nostril Breathing",
       scientific: "Nadi Shodhana Pranayama",
-      description: "Close one nostril → Inhale → Switch → Exhale. Balance your energy.",
+      description:
+        "Close one nostril → Inhale → Switch → Exhale. Balance your energy.",
 
       cycle: ["Inhale Left", "Exhale Right"],
       durations: [5, 5],
@@ -45,7 +47,15 @@ function getBreathingTechnique(ojas: number) {
   }
 }
 
-export default function BreathingPage() {
+export default function page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BreathingPage />
+    </Suspense>
+  );
+}
+
+function BreathingPage() {
   const searchParams = useSearchParams();
   const score = Number(searchParams.get("score") || 50);
   const technique = getBreathingTechnique(score);
@@ -93,8 +103,7 @@ export default function BreathingPage() {
             className="text-8xl mb-6"
             animate={{ y: [0, -10, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          >
-          </motion.span>
+          ></motion.span>
 
           {/* Circle with scaling */}
           <AnimatePresence mode="wait">
@@ -104,21 +113,29 @@ export default function BreathingPage() {
               initial={{ scale: 1 }}
               animate={{ scale: getScale(phase) }}
               exit={{ scale: 1 }}
-              transition={{ duration: technique.durations[phaseIndex], ease: "easeInOut" }}
+              transition={{
+                duration: technique.durations[phaseIndex],
+                ease: "easeInOut",
+              }}
             >
               {phase}
             </motion.div>
           </AnimatePresence>
 
           <p className="text-gray-800 font-semibold text-lg mt-4">
-            Ojas Score: <span className="text-blue-700 font-bold">{score}/100</span>
+            Ojas Score:{" "}
+            <span className="text-blue-700 font-bold">{score}/100</span>
           </p>
         </div>
 
         {/* Right Side: Instructions */}
         <div className="w-1/2 p-12 flex flex-col justify-center">
-          <h2 className="text-3xl font-bold text-blue-900 mb-6">{technique.name}</h2>
-          <p className="text-blue-700 font-semibold mb-4">{technique.scientific}</p>
+          <h2 className="text-3xl font-bold text-blue-900 mb-6">
+            {technique.name}
+          </h2>
+          <p className="text-blue-700 font-semibold mb-4">
+            {technique.scientific}
+          </p>
           <p className="text-gray-600 mb-6 italic">{technique.description}</p>
 
           <ul className="list-decimal list-inside text-gray-700 space-y-3 text-lg">
