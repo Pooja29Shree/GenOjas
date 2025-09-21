@@ -107,45 +107,47 @@ export default function LoginPage() {
           </div>
 
           {/* Overlay */}
-          <div
-            className={`absolute top-0 left-[50%] w-[50%] h-full bg-gradient-to-r from-blue-700 to-blue-400 text-white flex flex-col justify-center items-center p-16 transition-transform duration-700 ${
-              signIn ? "translate-x-0" : "-translate-x-full"
-            }`}
-          >
-            {signIn ? (
-              <>
-                <h3 className="text-3xl font-bold mb-4 opacity-100">
-                  Hello, Friend!
-                </h3>
-                <p className="mb-6 opacity-100">
-                  Enter your personal details and start your journey with us
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => toggle(false)}
-                  className="border-white text-white hover:bg-white hover:text-blue-700 transition-all"
-                >
-                  Sign Up
-                </Button>
-              </>
-            ) : (
-              <>
-                <h3 className="text-3xl font-bold mb-4 opacity-100">
-                  Welcome Back!
-                </h3>
-                <p className="mb-6 opacity-100">
-                  To keep connected with us, please login with your personal info
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => toggle(true)}
-                  className="border-white text-white hover:bg-white hover:text-blue-700 transition-all"
-                >
-                  Sign In
-                </Button>
-              </>
-            )}
-          </div>
+        
+<div
+  className={`absolute top-0 left-[50%] w-[50%] h-full bg-gradient-to-r from-blue-700 to-blue-400 text-white flex flex-col justify-center items-center p-16 transition-transform duration-700 ${
+    signIn ? "translate-x-0" : "-translate-x-full"
+  }`}
+>
+  {signIn ? (
+    <>
+      <h3 className="text-3xl font-bold mb-4 opacity-100">
+        Hello, Friend!
+      </h3>
+      <p className="mb-6 opacity-100">
+        Enter your personal details and start your journey with us
+      </p>
+      <Button
+        variant="outline"
+        onClick={() => toggle(false)}
+        className="border-white text-white bg-white/20 hover:bg-white/30 hover:text-blue-700 transition-all"
+      >
+        Sign Up
+      </Button>
+    </>
+  ) : (
+    <>
+      <h3 className="text-3xl font-bold mb-4 opacity-100">
+        Welcome Back!
+      </h3>
+      <p className="mb-6 opacity-100">
+        To keep connected with us, please login with your personal info
+      </p>
+      <Button
+        variant="outline"
+        onClick={() => toggle(true)}
+        className="border-white text-white bg-white/20 hover:bg-white/30 hover:text-blue-700 transition-all"
+      >
+        Sign In
+      </Button>
+    </>
+  )}
+</div>
+
         </div>
       </div>
     </AuroraBackgroundHome>
