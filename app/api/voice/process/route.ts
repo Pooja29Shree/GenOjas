@@ -7,33 +7,24 @@ export async function POST(req: NextRequest) {
   if (!userText) return NextResponse.json({ reply: "Say something!" });
 
   try {
-    // Call Vertex AI API using API key in query param
-    const apiRes = await fetch(
-      `https://us-central1-aiplatform.googleapis.com/v1/projects/gold-gearbox-472217-d5/locations/us-central1/publishers/google/models/text-bison-001:predict?key=${process.env.Vertex_AI_API}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          instances: [
-            { content: userText }
-          ],
-          parameters: {
-            temperature: 0.7,
-            maxOutputTokens: 256
-          }
-        }),
-      }
-    );
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: userText }],
+        temperature: 0.7,
+        max_tokens: 256,
+      }),
+    });
 
-    const data = await apiRes.json();
-
-    // Extract reply from response
-    const reply = data.predictions?.[0]?.content ?? "I didn't understand that.";
+    const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content ?? "I didn't understand that.";
 
     return NextResponse.json({ reply });
-
   } catch (err) {
     console.error(err);
     return NextResponse.json({ reply: "Oops! Something went wrong 😅" });
