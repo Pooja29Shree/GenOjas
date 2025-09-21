@@ -20,8 +20,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useChat } from "ai/react";
 import Link from "next/link";
+import { useState } from "react";
 
 const streakData = [
   { day: "Mon", value: 10 },
@@ -44,10 +44,38 @@ const ojasBoostData = [
 ];
 
 export default function DashboardPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      api: "/api/chat",
-    });
+
+  const [msg, setMsg] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [input, setInput] = useState("");
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  function handleChat(e) {
+    e.preventDefault();
+    setIsLoading(true);
+    fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messages: [
+          ...msg,
+          { role: "user", content: input }
+        ],
+      }),
+    })
+      .then((res) => res.text())
+      .then((data) => {
+        setMsg([...msg, { id: Date.now(), role: "user", content: input }, { id: Date.now() + 1, role: "assistant", content: data }]);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
 
   return (
     <div className="min-h-screen bg-gray-100/40 dark:bg-gray-800/40 p-4 sm:p-6 md:p-8">
@@ -112,12 +140,12 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="flex-grow overflow-y-auto">
               <div className="space-y-4">
-                {messages.map((m: any) => (
+                {msg.map((m: any) => (
                   <div key={m.id} className="flex gap-2">
                     <span className="font-bold">
                       {m.role === "user" ? "User: " : "AI: "}
                     </span>
-                    <span>{m.content}</span>
+                    <span className="text-black dark:text-white">{m.content}</span>
                   </div>
                 ))}
                 {isLoading && (
@@ -128,7 +156,7 @@ export default function DashboardPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <form onSubmit={handleSubmit} className="relative w-full">
+              <form onSubmit={handleChat} className="relative w-full">
                 <Input
                   value={input}
                   onChange={handleInputChange}
