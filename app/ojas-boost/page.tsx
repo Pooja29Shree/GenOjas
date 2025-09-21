@@ -2,6 +2,7 @@
 
 import AuroraBackgroundHome from "@/components/home/AuroraBackgroundHome";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const boostOptions = [
   "Dhyana",
@@ -23,19 +24,34 @@ export default function OjasBoostPage() {
 
         {/* Top row: 4 buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 w-full max-w-6xl justify-items-center">
-          {boostOptions.slice(0, 4).map((option) => (
-            <Button
-              key={option}
-              className="w-40 h-32 text-2xl font-bold text-white 
-                         bg-gradient-to-r from-purple-500 to-blue-500 
-                         hover:from-blue-500 hover:to-purple-500
-                         shadow-xl rounded-2xl
-                         transform transition-transform duration-300 hover:scale-105
-                         flex items-center justify-center"
-            >
-              {option}
-            </Button>
-          ))}
+          {boostOptions.slice(0, 4).map((option) =>
+            option === "Dhyana" ? (
+              <Link key={option} href="/breathing">
+                <Button
+                  className="w-40 h-32 text-2xl font-bold text-white 
+                             bg-gradient-to-r from-purple-500 to-blue-500 
+                             hover:from-blue-500 hover:to-purple-500
+                             shadow-xl rounded-2xl
+                             transform transition-transform duration-300 hover:scale-105
+                             flex items-center justify-center"
+                >
+                  {option}
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                key={option}
+                className="w-40 h-32 text-2xl font-bold text-white 
+                           bg-gradient-to-r from-purple-500 to-blue-500 
+                           hover:from-blue-500 hover:to-purple-500
+                           shadow-xl rounded-2xl
+                           transform transition-transform duration-300 hover:scale-105
+                           flex items-center justify-center"
+              >
+                {option}
+              </Button>
+            )
+          )}
         </div>
 
         {/* Bottom row: 3 buttons centered */}
@@ -54,8 +70,6 @@ export default function OjasBoostPage() {
             </Button>
           ))}
         </div>
-
-        {/* Optional: Image or other content can go here */}
       </div>
     </AuroraBackgroundHome>
   );
