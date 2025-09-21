@@ -21,6 +21,7 @@ import {
   YAxis,
 } from "recharts";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react"; // icon for button
 import { useState } from "react";
 
 const streakData = [
@@ -34,13 +35,13 @@ const streakData = [
 ];
 
 const ojasBoostData = [
-  { name: "Page A", uv: 4000, pv: 2400, amt: 2400 },
-  { name: "Page B", uv: 3000, pv: 1398, amt: 2210 },
-  { name: "Page C", uv: 2000, pv: 9800, amt: 2290 },
-  { name: "Page D", uv: 2780, pv: 3908, amt: 2000 },
-  { name: "Page E", uv: 1890, pv: 4800, amt: 2181 },
-  { name: "Page F", uv: 2390, pv: 3800, amt: 2500 },
-  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
+  { name: "Day 01", uv: 4000, pv: 2400, amt: 2400 },
+  { name: "Day 02", uv: 3000, pv: 1398, amt: 2210 },
+  { name: "Day 03", uv: 2000, pv: 9800, amt: 2290 },
+  { name: "Day 04", uv: 2780, pv: 3908, amt: 2000 },
+  { name: "Day 05", uv: 1890, pv: 4800, amt: 2181 },
+  { name: "Day 06", uv: 2390, pv: 3800, amt: 2500 },
+  { name: "Day 07", uv: 3490, pv: 4300, amt: 2100 },
 ];
 
 export default function DashboardPage() {
@@ -117,10 +118,22 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Updated OjasBoost Card with attractive button */}
           <Card>
-            <CardHeader>
-              <CardTitle>OjasBoost</CardTitle>
-              <CardDescription>Your Ojas boost over time.</CardDescription>
+            <CardHeader className="flex items-center justify-between">
+              <div>
+                <CardTitle>OjasBoost</CardTitle>
+                <CardDescription>Your Ojas boost over time.</CardDescription>
+              </div>
+              <Link href="/ojas-boost">
+                <Button
+                  size="sm"
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-purple-500 hover:to-blue-500 shadow-md flex items-center gap-1 transition-all"
+                >
+                  Boost your Ojas <ArrowRight size={16} />
+                </Button>
+              </Link>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -133,6 +146,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+
         <div className="space-y-8">
           <Card className="h-full flex flex-col">
             <CardHeader>
