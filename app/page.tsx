@@ -1,7 +1,17 @@
+"use client";
+
+import { useState } from "react";
 import AuroraBackgroundHome from "@/components/home/AuroraBackgroundHome";
 import { Button } from "@/components/ui/button";
+import VoiceAssistant from "@/components/mithra/voice_asst";
 
 export default function Home() {
+  const [showAssistant, setShowAssistant] = useState(false);
+
+  const handleGetStarted = () => {
+    setShowAssistant(true);
+  };
+
   return (
     <>
       <AuroraBackgroundHome>
@@ -16,7 +26,22 @@ export default function Home() {
             Your go-to Productivity and Mental Healthcare app.
           </p>
 
-          <Button variant="default" size="lg" className="cursor-pointer my-5 bg-gradient-to-r font-inter from-blue-700 to-blue-400 z-10 hover:shadow-[0px_0px_25px_0px_#93c5fd] hover:scale-110 active:scale-95 transition-all ease-in-out">Get Started</Button>
+          {!showAssistant && (
+            <Button
+              variant="default"
+              size="lg"
+              onClick={handleGetStarted}
+              className="cursor-pointer my-5 bg-gradient-to-r font-inter from-blue-700 to-blue-400 z-10 hover:shadow-[0px_0px_25px_0px_#93c5fd] hover:scale-110 active:scale-95 transition-all ease-in-out"
+            >
+              Get Started
+            </Button>
+          )}
+
+          {showAssistant && (
+            <div className="mt-8 w-full max-w-2xl z-10">
+              <VoiceAssistant />
+            </div>
+          )}
         </div>
       </AuroraBackgroundHome>
     </>
