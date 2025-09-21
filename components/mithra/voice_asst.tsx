@@ -1,122 +1,81 @@
 "use client";
-
-import React, { useState, useRef } from "react";
+import { useState } from "react";
+import { Mic, Loader2 } from "lucide-react";
 
 export default function VoiceAssistant() {
-  const [isRecording, setIsRecording] = useState(false);
-  const [transcript, setTranscript] = useState("");
-  const [assistantText, setAssistantText] = useState("");
-  const [emotion, setEmotion] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [audioSrc, setAudioSrc] = useState<string | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunks = useRef<Blob[]>([]);
+  const [messages, setMessages] = useState<{ role: "user" | "mithra"; text: string }[]>([]);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
-  const handleRecordStart = async () => {
-    setIsRecording(true);
-    setTranscript("");
-    setAssistantText("");
-    setEmotion("");
-    setAudioSrc(null);
+  // Simulate recording voice
+  const handleMicClick = async () => {
+    setIsListening(true);
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      mediaRecorderRef.current.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          audioChunks.current.push(e.data);
-        }
-      };
-      mediaRecorderRef.current.start();
-    } catch (err) {
-      console.error("Mic access error:", err);
-      setIsRecording(false);
-    }
+    // TODO: integrate Google Speech-to-Text API
+    setTimeout(() => {
+      const userText = "Hey Mithra, how are you today?";
+      setMessages((prev) => [...prev, { role: "user", text: userText }]);
+      setIsListening(false);
+      handleMithraReply(userText);
+    }, 2000);
   };
 
-  const handleRecordStop = async () => {
-    setIsRecording(false);
-    setLoading(true);
+  // Simulate Mithra's reply
+  const handleMithraReply = async (userText: string) => {
+    setIsSpeaking(true);
 
-    if (!mediaRecorderRef.current) return;
-    mediaRecorderRef.current.stop();
-
-    mediaRecorderRef.current.onstop = async () => {
-      const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
-      audioChunks.current = [];
-
-      const formData = new FormData();
-      formData.append("audio", audioBlob);
-
-      try {
-        const res = await fetch("/api/voice/process", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!res.ok) throw new Error("API request failed");
-
-        const data = await res.json();
-        setTranscript(data.transcript);
-        setAssistantText(data.assistant_text);
-        setEmotion(data.emotion);
-
-        if (data.tts_audio_base64) {
-          setAudioSrc(`data:audio/mp3;base64,${data.tts_audio_base64}`);
-        }
-      } catch (err) {
-        console.error("Processing error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    // TODO: call API (/api/voice/process)
+    setTimeout(() => {
+      const reply = "I’m doing great! Excited to chat with you.";
+      setMessages((prev) => [...prev, { role: "mithra", text: reply }]);
+      setIsSpeaking(false);
+    }, 2500);
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto bg-gray-900 text-white rounded-2xl shadow-xl">
-      <h1 className="text-xl font-bold mb-4 text-center">
-        🎙️ Mithra - Your Voice Friend
-      </h1>
+    <div className="w-full max-w-2xl h-[80vh] bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex flex-col p-6">
+      {/* Header */}
+      <div className="text-center font-bold text-2xl text-pink-300">Mithra</div>
 
-      <div className="flex justify-center mb-6">
-        <button
-          onMouseDown={handleRecordStart}
-          onMouseUp={handleRecordStop}
-          className={`w-16 h-16 rounded-full ${
-            isRecording ? "bg-red-500 animate-pulse" : "bg-green-500"
-          } flex items-center justify-center shadow-lg`}
-        >
-          {isRecording ? "⏺️" : "🎤"}
-        </button>
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto mt-4 space-y-4 pr-2">
+        {messages.map((msg, i) => (
+          <div
+            key={i}
+            className={`p-3 rounded-xl max-w-[80%] ${
+              msg.role === "user"
+                ? "ml-auto bg-gradient-to-r from-blue-600 to-blue-400 text-white"
+                : "mr-auto bg-gradient-to-r from-purple-600 to-pink-500 text-white"
+            }`}
+          >
+            {msg.text}
+          </div>
+        ))}
+
+        {/* Speaking indicator */}
+        {isSpeaking && (
+          <div className="mr-auto flex space-x-2 p-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white max-w-[40%]">
+            <span className="w-2 h-2 bg-white rounded-full animate-bounce" />
+            <span className="w-2 h-2 bg-white rounded-full animate-bounce delay-150" />
+            <span className="w-2 h-2 bg-white rounded-full animate-bounce delay-300" />
+          </div>
+        )}
       </div>
 
-      {loading && (
-        <p className="text-center animate-pulse text-gray-400">Processing...</p>
-      )}
-
-      {transcript && (
-        <div className="mb-4">
-          <h2 className="font-semibold text-sm text-gray-400">You said:</h2>
-          <p className="bg-gray-800 p-3 rounded-lg">{transcript}</p>
-        </div>
-      )}
-
-      {assistantText && (
-        <div className="mb-4">
-          <h2 className="font-semibold text-sm text-gray-400">
-            Mithra’s reply ({emotion}):
-          </h2>
-          <p className="bg-blue-800 p-3 rounded-lg animate-pulse">
-            {assistantText}
-          </p>
-        </div>
-      )}
-
-      {audioSrc && (
-        <audio controls autoPlay className="w-full mt-2">
-          <source src={audioSrc} type="audio/mp3" />
-        </audio>
-      )}
+      {/* Controls */}
+      <div className="mt-4 flex justify-center">
+        <button
+          onClick={handleMicClick}
+          disabled={isListening}
+          className={`w-14 h-14 flex items-center justify-center rounded-full shadow-lg transition-all ${
+            isListening
+              ? "bg-red-500 animate-pulse"
+              : "bg-gradient-to-r from-pink-500 to-purple-600 hover:scale-110 active:scale-95"
+          }`}
+        >
+          {isListening ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : <Mic className="w-6 h-6 text-white" />}
+        </button>
+      </div>
     </div>
   );
 }
