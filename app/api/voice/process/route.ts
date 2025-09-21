@@ -1,43 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
+import { GoogleGenAI } from "@google/genai";
 
-// Initialize TTS client (make sure your service account JSON path is correct)
+// Initialize TTS client
 const ttsClient = new TextToSpeechClient({
-  keyFilename: process.env.GOOGLE_TTS_KEYFILE, // Example: ./service-account.json
+  keyFilename: process.env.GOOGLE_TTS_KEYFILE,
 });
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const userText = body.text;
-
-  if (!userText) return NextResponse.json({ reply: "Say something!" });
-
   try {
-    let reply = "";
+    const body = await req.json();
+    const userText = body.text;
+
+    if (!userText) return NextResponse.json({ reply: "Say something!" });
 
     // If user says "I'm done", return a motivational quote
+    let reply = "";
     if (userText.toLowerCase().includes("i'm done")) {
       const quotes = [
         "Remember, every day is a new beginning 🌸",
         "You did your best today, take a deep breath 💜",
         "Even small steps count, keep going 💫",
-        "Be proud of what you achieved today, no matter how small ✨",
       ];
       reply = quotes[Math.floor(Math.random() * quotes.length)];
     } else {
-      // Otherwise, use Gemini API to respond
-      const { GoogleGenAI } = await import("@google/genai");
+      // Otherwise, use Gemini AI
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: userText,
       });
-
       reply = response.text ?? "I didn't understand that.";
     }
 
-    // Convert Mithra's reply to speech
+    // Convert reply to speech
     const [audioResponse] = await ttsClient.synthesizeSpeech({
       input: { text: reply },
       voice: { languageCode: "en-US", ssmlGender: "FEMALE" },
@@ -48,7 +44,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ reply, audioContent });
   } catch (err) {
-    console.error("Error in /voice/process:", err);
+    console.error(err);
     return NextResponse.json({ reply: "Oops! Something went wrong 😅" });
   }
 }
