@@ -1,6 +1,6 @@
 import AuroraBackgroundHome from "@/components/home/AuroraBackgroundHome";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import Link from "next/link"; 
 
 export default function Home() {
   return (
@@ -10,14 +10,14 @@ export default function Home() {
           <h1 className="text-4xl font-black font-jakarta text-blue-950 sm:text-5xl md:text-6xl">
             Welcome to{" "}
             <span className="bg-gradient-to-r font-jakarta from-blue-700 to-blue-400 bg-clip-text text-transparent [text-shadow:0_0_10px_#93c5fd]">
-              GenOjas
+              Gen Ojas
             </span>
           </h1>
           <p className="text-blue-900 mt-4 text-lg font-inter dark:text-gray-300 sm:text-xl md:text-2xl">
             Your go-to Productivity and Mental Healthcare app.
           </p>
 
-          <Link href="/welcome">
+          <Link href="/login"> 
             <Button
               variant="default"
               size="lg"
