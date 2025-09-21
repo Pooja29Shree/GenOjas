@@ -1,54 +1,45 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Mic, Loader2 } from "lucide-react";
 
 export default function VoiceAssistant() {
   const [messages, setMessages] = useState<
     { role: "user" | "mithra"; text: string }[]
   >([]);
+  const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunks = useRef<Blob[]>([]);
 
-  const handleMicClick = async () => {
-    if (!isListening) {
-      // 🎤 Start listening
-      setIsListening(true);
-      audioChunks.current = [];
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
+  // Fallback text chat
+  const handleSend = async () => {
+    if (!input.trim()) return;
 
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunks.current.push(e.data);
-      };
+    // 1️⃣ Add user message
+    setMessages((prev) => [...prev, { role: "user", text: input }]);
+    const messageToSend = input;
+    setInput("");
+    setIsTyping(true);
 
-      mediaRecorder.start();
-    } else {
-      // ⏹ Stop listening
-      setIsListening(false);
-      mediaRecorderRef.current?.stop();
+    try {
+      // 2️⃣ Send to backend
+      const res = await fetch("/api/voice/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: messageToSend }),
+      });
+      const data = await res.json();
 
-      mediaRecorderRef.current!.onstop = async () => {
-        const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
-        const formData = new FormData();
-        formData.append("file", audioBlob, "recording.webm");
-
-        // 1️⃣ Send audio to backend
-        const res = await fetch("/api/voice/process", { method: "POST", body: formData });
-        const data = await res.json();
-
-        // 2️⃣ Add user transcript to chat
-        if (data.transcript) {
-          setMessages((prev) => [...prev, { role: "user", text: data.transcript }]);
-        }
-
-        // 3️⃣ Add Mithra text reply to chat
-        if (data.reply) {
-          setMessages((prev) => [...prev, { role: "mithra", text: data.reply }]);
-        }
-      };
+      // 3️⃣ Add Mithra reply
+      setMessages((prev) => [...prev, { role: "mithra", text: data.reply }]);
+    } catch (err) {
+      console.error(err);
+      setMessages((prev) => [
+        ...prev,
+        { role: "mithra", text: "Oops, something went wrong 😅" },
+      ]);
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -70,23 +61,38 @@ export default function VoiceAssistant() {
             {msg.text}
           </div>
         ))}
+        {isTyping && (
+          <div className="mr-auto p-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white max-w-[80%]">
+            Mithra is typing...
+          </div>
+        )}
       </div>
 
-      {/* Mic button */}
-      <div className="mt-4 flex justify-center">
+      {/* Input */}
+      <div className="mt-4 flex gap-2">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          placeholder="Type something..."
+          className="flex-1 px-4 py-2 rounded-xl border border-white/20 bg-white/10 text-white outline-none placeholder:text-white/50"
+        />
         <button
-          onClick={handleMicClick}
+          onClick={handleSend}
+          className="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl text-white hover:scale-105 transition-transform"
+        >
+          Send
+        </button>
+        {/* Mic button for future */}
+        <button
           className={`w-14 h-14 flex items-center justify-center rounded-full shadow-lg transition-all ${
             isListening
               ? "bg-red-500 animate-pulse"
               : "bg-gradient-to-r from-pink-500 to-purple-600 hover:scale-110 active:scale-95"
           }`}
         >
-          {isListening ? (
-            <Loader2 className="w-6 h-6 animate-spin text-white" />
-          ) : (
-            <Mic className="w-6 h-6 text-white" />
-          )}
+          <Mic className="w-6 h-6 text-white" />
         </button>
       </div>
     </div>
